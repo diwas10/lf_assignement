@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  api:
+    container_name: lf-assignment-backend
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - postgres
+    command: yarn dev
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env.local
+    stdin_open: true
+
+  postgres:
+    container_name: lf_assignment_postgres
+    image: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/data/db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lf_assignment
+    env_file:
+      - .env.local
+
+volumes:
+  postgres_data:

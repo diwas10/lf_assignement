@@ -1,0 +1,16 @@
+import { FilterQuery } from "@mikro-orm/core";
+import { SqlEntityRepository } from '@mikro-orm/knex';
+import { Singleton } from 'utils/decorators/singleton';
+import { {{pascalCase name}}Entity } from './{{kebabCase name}}.entity';
+
+@Singleton
+class {{pascalCase name}}Repository extends SqlEntityRepository<{{pascalCase name}}Entity>{
+  findOneEntry = async (data: FilterQuery<{{pascalCase name}}Entity>) => {
+      return await this.findOne({
+        ...(data as any),
+        isDeleted: false,
+      });
+    };
+}
+
+export default {{pascalCase name}}Repository;
