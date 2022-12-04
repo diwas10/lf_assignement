@@ -9,6 +9,7 @@ const patientRoutes = (app: Application) => {
   app.route("/patient/:id").delete(patientController.delete);
   app.route("/patient").get(patientController.findAll);
   app.route("/patient/:id").get(patientController.findOne);
+  app.route("/patient/urgent-status/:id").patch(patientController.urgentStatus);
 };
 
 export default patientRoutes;

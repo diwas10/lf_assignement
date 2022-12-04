@@ -1,4 +1,5 @@
-import { IsDateString, IsEmail, IsNotEmpty, Length } from "class-validator";
+import { IsBooleanString, IsDateString, IsEmail, IsNotEmpty, Length } from "class-validator";
+import { Transform } from "class-transformer";
 
 export class Patient {
   @IsNotEmpty({ message: "Full Name is Required." })
@@ -18,4 +19,9 @@ export class Patient {
 
   @IsNotEmpty({ message: "Address is Required" })
   address: string;
+
+  @IsNotEmpty({ message: "Patient Urgent Status is Required" })
+  @IsBooleanString({ message: "Patient Urgent Status must be a boolean" })
+  @Transform(() => Boolean)
+  isUrgent: string;
 }

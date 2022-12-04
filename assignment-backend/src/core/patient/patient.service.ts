@@ -25,7 +25,7 @@ class PatientService {
     return patient;
   };
 
-  findAll = async () => await this.patientRepository.find({ isDeleted: false });
+  findAll = async () => await this.patientRepository.findAllSortedByUrgency();
 
   findOne = async (id: number) => await this.patientRepository.findOneEntry({ id });
 
@@ -34,7 +34,10 @@ class PatientService {
 
     if (file) Object.assign(patientData, { profileImage: file.path });
 
-    return await this.patientRepository.createPatient(patientData);
+    return await this.patientRepository.createPatient({
+      ...patientData,
+      isUrgent: patientData.isUrgent === "true",
+    });
   };
 
   update = async (id: number, patientData: Patient, file: Express.Multer.File) => {
@@ -43,7 +46,10 @@ class PatientService {
 
     if (file) Object.assign(patientData, { profileImage: file.path });
 
-    const updatedPatient = wrap(patient).assign(patientData);
+    const updatedPatient = wrap(patient).assign({
+      ...patientData,
+      isUrgent: patientData.isUrgent === "true",
+    });
     await this.patientRepository.flush();
     return updatedPatient;
   };
@@ -52,7 +58,14 @@ class PatientService {
     const user = await this.findPatientOrFail({ id });
     await wrap(user).assign({ ...user, isDeleted: true });
     await this.patientRepository.flush();
-    return null;
+    return {};
+  };
+
+  urgentStatus = async (id: number, isUrgent) => {
+    const user = await this.findPatientOrFail({ id });
+    await wrap(user).assign({ ...user, isUrgent });
+    await this.patientRepository.flush();
+    return {};
   };
 }
 

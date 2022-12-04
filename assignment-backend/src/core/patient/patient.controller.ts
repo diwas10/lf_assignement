@@ -45,6 +45,13 @@ class PatientController {
       message: `Patient List Fetched in Successfully`,
     });
   };
+
+  urgentStatus = async (req: Request<{ isUrgent: boolean }, { id: string }>, res: Response) => {
+    return SuccessRes(res, 200, {
+      data: await this.patientService.urgentStatus(Number(req.params.id), req.body.isUrgent),
+      message: `Patient Urgent Status Changed Successfully`,
+    });
+  };
 }
 
 export default PatientController;

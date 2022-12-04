@@ -4,9 +4,8 @@ import UserRepository from "./user.repository";
 import { Singleton } from "@utils/decorators/singleton";
 import { UserEntity } from "./user.entity";
 import { Mikro } from "../../app";
-import { generatePassword, getClientUrl } from "@utils/utility";
+import { generatePassword } from "@utils/utility";
 import { wrap } from "@mikro-orm/core";
-import sendMail from "@utils/send-mail";
 import { hashPassword } from "@utils/bcrypt";
 
 @Singleton
@@ -19,15 +18,7 @@ class UserService {
 
   private findUserOrFail = async (id: string) => {
     const user = await this.userRepository.findOne({ id } as any, {
-      populate: [
-        "id",
-        "isPermanent",
-        "email",
-        "createdAt",
-        "createdBy",
-        "updatedAt",
-        "updatedBy",
-      ],
+      populate: ["id", "isPermanent", "email", "createdAt", "createdBy", "updatedAt", "updatedBy"],
     });
     if (!user) throw new HttpException(400, "User does not Exist.");
 
@@ -46,12 +37,10 @@ class UserService {
 
     const password = generatePassword();
 
-    const user = await this.userRepository.createUser({
+    return await this.userRepository.createUser({
       ...userData,
       password: await hashPassword(password),
     });
-
-    return user;
   };
 
   update = async (id: string, userData: User) => {

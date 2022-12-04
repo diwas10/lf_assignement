@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../../components/UI/Layouts';
-import { Table } from 'reactstrap';
+import { Badge, Table } from 'reactstrap';
 import PatientModal from './PatientModal';
 import useToggle from '../../../hooks/useToggle';
 import { useApp } from '../../../providers/AppProvider';
@@ -48,12 +48,13 @@ const Patient = () => {
       </div>
 
       <div className={'flex-grow-1 px-5'}>
-        <Table hover striped>
+        <Table hover striped responsive>
           <thead className={'bg-secondary text-white'}>
             <tr>
               <th>#</th>
               <th>Image</th>
               <th>Full Name</th>
+              <th>Urgent Status</th>
               <th>Email</th>
               <th>Contact Number</th>
               <th>DOB</th>
@@ -77,10 +78,15 @@ const Patient = () => {
                     )}
                   </td>
                   <td>{patient.fullName}</td>
+                  <td>
+                    <Badge color={patient.isUrgent ? 'danger' : 'info'}>
+                      {patient.isUrgent ? 'Urgent' : 'Not Urgent'}
+                    </Badge>
+                  </td>
                   <td>{patient.email}</td>
                   <td>{patient.contactNumber}</td>
                   <td>{patient.dob}</td>
-                  <td>{patient.address}</td>
+                  <td title={patient.address}>{patient.address.slice(0, 20)}...</td>
 
                   <td>
                     <div className={'d-flex'}>
@@ -92,7 +98,7 @@ const Patient = () => {
                         size={'sm'}
                         onClick={() => {
                           onToggle();
-                          setSelectedPatient(patient);
+                          setSelectedPatient({ ...patient });
                         }}>
                         <BiEdit fontSize={'1.3rem'} />
                       </Button>
@@ -104,7 +110,7 @@ const Patient = () => {
                         size={'sm'}
                         onClick={() => {
                           onDeleteToggle();
-                          setSelectedPatient(patient);
+                          setSelectedPatient({ ...patient });
                         }}>
                         <BiTrash fontSize={'1.3rem'} />
                       </Button>
@@ -114,7 +120,7 @@ const Patient = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={8} className={'mt-3 text-center'}>
+                <td colSpan={9} className={'mt-3 text-center'}>
                   Data Not Available
                 </td>
               </tr>
