@@ -38,19 +38,20 @@ class PatientRepository extends SqlEntityRepository<PatientEntity> {
     // return qb.select("*").where({ isDeleted: false }).orderBy({ isUrgent: QueryOrder.desc });
 
     return await this.em.execute(`
-        select p.full_name                                             as "fullName",
+        select p.full_name          as "fullName",
                p.id,
                p.address,
                p.dob,
                p.email,
-               p.contact_number                                        as "contactNumber",
-               p.profile_image                                         as "profileImage",
-               json_agg(json_build_object('id', a.id, 'name', a.name)) as "allergies"
+               p.profile_image as "profileImage",
+               p.contact_number     as "contactNumber",
+               nullif(json_agg((json_strip_nulls(json_build_object('id', a.id, 'name', a.name))))::text,
+                      '[{}]')::json as allergies
         from patient p
-                 inner join patient_allergies pa on p.id = pa.patient_entity_id
-                 inner join allergies a on a.id = pa.allergies_entity_id
-        where a.is_deleted = false
-        group by pa.patient_entity_id, p.id`);
+                 full join patient_allergies pa on p.id = pa.patient_entity_id
+                 full join allergies a on a.id = pa.allergies_entity_id
+        where p.is_deleted = false
+        group by p.id;`);
   };
 }
 
